@@ -22,6 +22,7 @@
  */
 package com.googlecode.jmxtrans.model.output;
 
+import ch.qos.logback.core.util.FileSize;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
@@ -42,10 +43,10 @@ import org.slf4j.impl.Log4jLoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.googlecode.jmxtrans.util.NumberUtils.isNumeric;
+import static java.lang.Long.parseLong;
 
 /**
  * Writes out data in the same format as the GraphiteWriter, except to a file
@@ -74,7 +75,7 @@ public class KeyOutWriter extends BaseOutputWriter {
 
 
 	private final String outputFile;
-	private final String maxLogFileSize;
+	private final FileSize maxLogFileSize;
 	private final int maxLogBackupFiles;
 	private final String delimiter;
 
@@ -85,17 +86,17 @@ public class KeyOutWriter extends BaseOutputWriter {
 			@JsonProperty("debug") Boolean debugEnabled,
 			@JsonProperty("outputFile") String outputFile,
 			@JsonProperty("maxLogFileSize") String maxLogFileSize,
-			@JsonProperty("maxLogBackupFiles") int maxLogBackupFiles,
+			@JsonProperty("maxLogBackupFiles") Integer maxLogBackupFiles,
 			@JsonProperty("delimiter") String delimiter,
 			@JsonProperty("settings") Map<String, Object> settings) {
 		super(typeNames, booleanAsNumber, debugEnabled, settings);
 		this.outputFile = MoreObjects.firstNonNull(
 				outputFile,
 				(String) getSettings().get("outputFile"));
-		this.maxLogFileSize = firstNonNull(
+		this.maxLogFileSize = toFileSize(firstNonNull(
 				maxLogFileSize,
 				(String) getSettings().get(SETTING_MAX_LOG_FILE_SIZE),
-				MAX_LOG_FILE_SIZE);
+				MAX_LOG_FILE_SIZE));
 		this.maxLogBackupFiles = firstNonNull(
 				maxLogBackupFiles,
 				(Integer) getSettings().get(SETTING_MAX_BACK_FILES),
@@ -105,6 +106,10 @@ public class KeyOutWriter extends BaseOutputWriter {
 				(String) getSettings().get(SETTING_DELIMITER),
 				DEFAULT_DELIMITER
 		);
+	}
+
+	private FileSize toFileSize(String s) {
+		return new FileSize(parseLong(s));
 	}
 
 	/**
@@ -134,13 +139,10 @@ public class KeyOutWriter extends BaseOutputWriter {
 		List<String> typeNames = getTypeNames();
 
 		for (Result result : results) {
-			Map<String, Object> resultValues = result.getValues();
-			for (Entry<String, Object> values : resultValues.entrySet()) {
-				if (isNumeric(values.getValue())) {
+			if (isNumeric(result.getValue())) {
 
-					logger.info(KeyUtils.getKeyString(server, query, result, values, typeNames, null) + delimiter
-							+ values.getValue().toString() + delimiter + result.getEpoch());
-				}
+				logger.info(KeyUtils.getKeyString(server, query, result, typeNames, null) + delimiter
+						+ result.getValue().toString() + delimiter + result.getEpoch());
 			}
 		}
 	}
@@ -169,7 +171,7 @@ public class KeyOutWriter extends BaseOutputWriter {
 	}
 
 	protected Appender buildLog4jAppender(
-			String fileStr, String maxLogFileSize,
+			String fileStr, FileSize maxLogFileSize,
 			Integer maxLogBackupFiles) throws IOException {
 
 		PatternLayout pl = new PatternLayout(LOG_PATTERN);
@@ -177,7 +179,7 @@ public class KeyOutWriter extends BaseOutputWriter {
 		appender.setImmediateFlush(true);
 		appender.setBufferedIO(false);
 		appender.setBufferSize(LOG_IO_BUFFER_SIZE_BYTES);
-		appender.setMaxFileSize(maxLogFileSize);
+		appender.setMaxFileSize(Long.toString(maxLogFileSize.getSize()));
 		appender.setMaxBackupIndex(maxLogBackupFiles);
 
 		return appender;
@@ -196,7 +198,7 @@ public class KeyOutWriter extends BaseOutputWriter {
 		};
 	}
 
-	public String getMaxLogFileSize() {
+	public FileSize getMaxLogFileSize() {
 		return maxLogFileSize;
 	}
 

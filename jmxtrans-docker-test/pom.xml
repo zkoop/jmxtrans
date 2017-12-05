@@ -29,10 +29,12 @@
 	<parent>
 		<groupId>org.jmxtrans</groupId>
 		<artifactId>jmxtrans-parent</artifactId>
-		<version>264-SNAPSHOT</version>
+		<version>268-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>jmxtrans-docker-test</artifactId>
+
+	<packaging>pom</packaging>
 
 	<properties>
 		<deb.install.artifact>org.jmxtrans:jmxtrans:deb</deb.install.artifact>

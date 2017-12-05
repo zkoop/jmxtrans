@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.googlecode.jmxtrans.util.NumberUtils.isNumeric;
@@ -103,7 +102,7 @@ public class NagiosWriter extends BaseOutputWriter {
 		this.prefix = firstNonNull(prefix, (String) this.getSettings().get(PREFIX), "");
 		this.suffix = firstNonNull(suffix, (String) this.getSettings().get(POSFIX), "");
 
-		if (filters.size() != thresholds.size()) {
+		if (this.filters.size() != this.thresholds.size()) {
 			throw new IllegalStateException("filters and thresholds must have the same size.");
 		}
 	}
@@ -169,34 +168,29 @@ public class NagiosWriter extends BaseOutputWriter {
 		List<String> typeNames = getTypeNames();
 
 		for (Result result : results) {
-			Map<String, Object> resultValues = result.getValues();
-			if (resultValues != null) {
-				for (Entry<String, Object> values : resultValues.entrySet()) {
-					String[] keyString = KeyUtils.getKeyString(server, query, result, values, typeNames, null).split("\\.");
-					if (isNumeric(values.getValue()) && filters.contains(keyString[2])) {
-						int thresholdPos = filters.indexOf(keyString[2]);
-						StringBuilder sb = new StringBuilder();
+			String[] keyString = KeyUtils.getKeyString(server, query, result, typeNames, null).split("\\.");
+			if (isNumeric(result.getValue()) && filters.contains(keyString[2])) {
+				int thresholdPos = filters.indexOf(keyString[2]);
+				StringBuilder sb = new StringBuilder();
 
-						sb.append("[");
-						sb.append(result.getEpoch());
-						sb.append("] PROCESS_SERVICE_CHECK_RESULT;");
-						sb.append(nagiosHost);
-						sb.append(";");
-						if (prefix != null) {
-							sb.append(prefix);
-						}
-						sb.append(keyString[2]);
-						if (suffix != null) {
-							sb.append(suffix);
-						}
-						sb.append(";");
-						sb.append(nagiosCheckValue(values.getValue().toString(), thresholds.get(thresholdPos)));
-						sb.append(";");
-						//Missing the performance information
-
-						logger.info(sb.toString());
-					}
+				sb.append("[");
+				sb.append(result.getEpoch());
+				sb.append("] PROCESS_SERVICE_CHECK_RESULT;");
+				sb.append(nagiosHost);
+				sb.append(";");
+				if (prefix != null) {
+					sb.append(prefix);
 				}
+				sb.append(keyString[2]);
+				if (suffix != null) {
+					sb.append(suffix);
+				}
+				sb.append(";");
+				sb.append(nagiosCheckValue(result.getValue().toString(), thresholds.get(thresholdPos)));
+				sb.append(";");
+				//Missing the performance information
+
+				logger.info(sb.toString());
 			}
 		}
 	}
