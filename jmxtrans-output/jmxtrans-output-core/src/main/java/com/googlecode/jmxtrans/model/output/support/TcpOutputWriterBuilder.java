@@ -47,7 +47,7 @@ public class TcpOutputWriterBuilder<T extends WriterBasedOutputWriter> {
 	@Nonnull private final InetSocketAddress server;
 	@Nonnull private final T target;
 	@Nonnull @Setter private Charset charset = Charsets.UTF_8;
-	@Setter private int socketTimeoutMillis = 200;
+	@Setter private int socketTimeoutMillis = 60000;
 	@Setter private int poolClaimTimeoutSeconds = 1;
 	@Setter private int poolSize = 1;
 	@Nonnull @Setter private FlushStrategy flushStrategy = new NeverFlush();

@@ -97,7 +97,7 @@ public class WavefrontWriterFactory implements OutputWriterFactory {
 						new WavefrontWriter2(messageFormatter))
 						.setFlushStrategy(flushStrategy)
 						.setPoolSize(poolSize)
-						.setSocketTimeoutMillis(10000)
+						.setSocketTimeoutMillis(60000)
 						.build());
 	}
 }

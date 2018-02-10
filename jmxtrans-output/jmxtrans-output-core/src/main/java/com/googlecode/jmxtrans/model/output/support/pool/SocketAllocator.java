@@ -57,7 +57,7 @@ public class SocketAllocator implements Allocator<SocketPoolable> {
 		// create new InetSocketAddress to ensure name resolution is done again
 		SocketAddress serverAddress = new InetSocketAddress(server.getHostName(), server.getPort());
 		Socket socket = new Socket();
-		socket.setKeepAlive(false);
+		socket.setKeepAlive(true);
 		socket.connect(serverAddress, socketTimeoutMillis);
 
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), charset));

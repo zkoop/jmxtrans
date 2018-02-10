@@ -51,7 +51,7 @@ public class WavefrontMessageFormatterTest {
 		this.mockResult = Mockito.mock(Result.class);
 
 		// Setup common mock interactions.
-		Mockito.when(this.mockResult.getValues()).thenReturn(ImmutableMap.of("x-att1-x", (Object) "120021"));
+		Mockito.when(this.mockResult.getValue()).thenReturn(ImmutableMap.of("x-att1-x", (Object) "120021"));
 		Mockito.when(this.mockResult.getAttributeName()).thenReturn("X-ATT-X");
 		Mockito.when(this.mockResult.getClassName()).thenReturn("X-DOMAIN.PKG.CLASS-X");
 		Mockito.when(this.mockResult.getTypeName()).
@@ -101,7 +101,7 @@ public class WavefrontMessageFormatterTest {
 		WavefrontMessageFormatter formatter =
 				new WavefrontMessageFormatter(ImmutableList.<String>of(), ImmutableMap.<String, String>of(), WavefrontMessageFormatter.DEFAULT_SOURCE_NAME);
 
-		Mockito.when(this.mockResult.getValues()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "120021"));
+		Mockito.when(this.mockResult.getValue()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "120021"));
 
 		Iterable<String> strings = formatter.formatResults(ImmutableList.of(this.mockResult));
 
@@ -169,7 +169,7 @@ public class WavefrontMessageFormatterTest {
 		WavefrontMessageFormatter formatter = createDefaultFormatter();
 
 		ImmutableMap<String, Object> values = ImmutableMap.of();
-		Mockito.when(this.mockResult.getValues()).thenReturn(values);
+		Mockito.when(this.mockResult.getValue()).thenReturn(values);
 
 		Iterable<String> strings = formatter.formatResults(ImmutableList.of(this.mockResult));
 
@@ -182,7 +182,7 @@ public class WavefrontMessageFormatterTest {
 
 		WavefrontMessageFormatter formatter = createDefaultFormatter();
 
-		Mockito.when(this.mockResult.getValues()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "120021"));
+		Mockito.when(this.mockResult.getValue()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "120021"));
 
 		Iterable<String> strings = formatter.formatResults(ImmutableList.of(this.mockResult));
 
@@ -200,7 +200,7 @@ public class WavefrontMessageFormatterTest {
 
 		WavefrontMessageFormatter formatter = createDefaultFormatter();
 
-		Mockito.when(this.mockResult.getValues()).
+		Mockito.when(this.mockResult.getValue()).
 				thenReturn(ImmutableMap.of("X-ATT-X", (Object) "120021", "XX-ATT-XX", (Object) "210012"));
 
 		Iterable<String> strings = formatter.formatResults(ImmutableList.of(this.mockResult));
@@ -232,7 +232,7 @@ public class WavefrontMessageFormatterTest {
 	public void testNonNumericValue() throws Exception {
 
 		WavefrontMessageFormatter formatter = createDefaultFormatter();
-		Mockito.when(this.mockResult.getValues()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "THIS-IS-NOT-A-NUMBER"));
+		Mockito.when(this.mockResult.getValue()).thenReturn(ImmutableMap.of("X-ATT-X", (Object) "THIS-IS-NOT-A-NUMBER"));
 		Iterable<String> strings = formatter.formatResults(ImmutableList.of(this.mockResult));
 		Assert.assertEquals(0, Iterables.size(strings));
 

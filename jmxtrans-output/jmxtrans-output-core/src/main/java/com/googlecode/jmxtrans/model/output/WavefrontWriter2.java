@@ -27,6 +27,8 @@ import com.googlecode.jmxtrans.model.Result;
 import com.googlecode.jmxtrans.model.Server;
 import com.googlecode.jmxtrans.model.output.support.WriterBasedOutputWriter;
 import com.googlecode.jmxtrans.model.output.support.wavefront.WavefrontMessageFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
@@ -35,7 +37,7 @@ import java.io.Writer;
 
 @ThreadSafe
 public class WavefrontWriter2 implements WriterBasedOutputWriter {
-
+	private static final Logger logger = LoggerFactory.getLogger(WavefrontWriter2.class);
 	private final WavefrontMessageFormatter messageFormatter;
 
 	public WavefrontWriter2(WavefrontMessageFormatter messageFormatter) {
@@ -46,6 +48,7 @@ public class WavefrontWriter2 implements WriterBasedOutputWriter {
 	public void write(@Nonnull final Writer writer, @Nonnull Server server, @Nonnull Query query, @Nonnull Iterable<Result> results) throws IOException {
 
 		for(String resultString : messageFormatter.formatResults(results)) {
+			logger.trace(resultString);
 			writer.write(resultString + "\n");
 		}
 	}

@@ -69,17 +69,17 @@ public class WavefrontMessageFormatter {
 	private final String hostnameTag;
 
 	public WavefrontMessageFormatter(@Nonnull ImmutableList<String> typeNames,
-									 @Nonnull ImmutableMap<String, String> tags, String source) throws LifecycleException, UnknownHostException {
+									@Nonnull ImmutableMap<String, String> tags, String source) throws LifecycleException, UnknownHostException {
 		this(typeNames, tags, DEFAULT_TAG_NAME, source, null, true, "localhost");
 	}
 
 	public WavefrontMessageFormatter(@Nonnull ImmutableList<String> typeNames,
-									 @Nonnull ImmutableMap<String, String> tags,
-									 @Nonnull String tagName,
-									 @Nonnull String source,
-									 @Nullable String metricNamingExpression,
-									 boolean mergeTypeNamesTags,
-									 @Nullable String hostnameTag) throws UnknownHostException, LifecycleException {
+									@Nonnull ImmutableMap<String, String> tags,
+									@Nonnull String tagName,
+									@Nonnull String source,
+									@Nullable String metricNamingExpression,
+									boolean mergeTypeNamesTags,
+									@Nullable String hostnameTag) throws UnknownHostException, LifecycleException {
 		this.typeNames = typeNames;
 		this.tags = tags;
 		this.tagName = tagName;
@@ -156,17 +156,13 @@ public class WavefrontMessageFormatter {
 	 */
 	private List<String> formatResult(Result result) {
 		List<String> resultStrings = new LinkedList<>();
-		Map<String, Object> values = result.getValues();
 
-		String attributeName = result.getAttributeName();
-
-		if (values.containsKey(attributeName) && values.size() == 1) {
-			processOneMetric(resultStrings, result, values.get(attributeName), null, null, source);
+		if (result.getValuePath().isEmpty()) {
+			processOneMetric(resultStrings, result, result.getValue(), null, null, source);
 		} else {
-			for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
-				processOneMetric(resultStrings, result, valueEntry.getValue(), tagName, valueEntry.getKey(), source);
-			}
+			processOneMetric(resultStrings,  result, result.getValue(), tagName, StringUtils.join(result.getValuePath(),'.'),source);
 		}
+
 		return resultStrings;
 	}
 

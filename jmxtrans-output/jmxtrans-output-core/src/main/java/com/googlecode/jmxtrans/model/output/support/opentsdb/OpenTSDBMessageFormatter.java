@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import com.googlecode.jmxtrans.exceptions.LifecycleException;
 import com.googlecode.jmxtrans.model.NamingStrategy;
 import com.googlecode.jmxtrans.model.Result;
-import com.googlecode.jmxtrans.model.Server;
+	import com.googlecode.jmxtrans.model.Server;
 import com.googlecode.jmxtrans.model.naming.ClassAttributeNamingStrategy;
 import com.googlecode.jmxtrans.model.naming.JexlNamingStrategy;
 import com.googlecode.jmxtrans.model.naming.typename.TypeNameValue;
